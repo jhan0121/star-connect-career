@@ -1,5 +1,7 @@
 # **project: Connecting Star**
 
+URL: [링크](https://star-connect-career.lovable.app/)
+
 ## **📌 목표**
 
 - 커리어에 관한 고민을 가진 사람들 간의 커뮤니티 환경 조성하기
