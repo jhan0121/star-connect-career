@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { ArrowLeft, User, Clock, MapPin, Plus, Edit, Trash2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,9 +8,27 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from '@/hooks/use-toast';
 
+interface AvailableSlot {
+  id: number;
+  date: string;
+  time: string;
+  type: string;
+  location?: string;
+}
+
+interface Profile {
+  name: string;
+  title: string;
+  company: string;
+  experience: string;
+  description: string;
+  expertise: string[];
+  consultationType: string[];
+}
+
 export const ProfileManager = ({ onBack }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [profile, setProfile] = useState({
+  const [profile, setProfile] = useState<Profile>({
     name: '홍길동',
     title: 'UX 디자이너',
     company: '테크 스타트업',
@@ -21,7 +38,7 @@ export const ProfileManager = ({ onBack }) => {
     consultationType: ['포트폴리오 리뷰', '디자인 피드백', '커리어 상담']
   });
 
-  const [availableSlots, setAvailableSlots] = useState([
+  const [availableSlots, setAvailableSlots] = useState<AvailableSlot[]>([
     { id: 1, date: '2025-07-10', time: '19:00', type: '온라인' },
     { id: 2, date: '2025-07-12', time: '14:00', type: '오프라인', location: '강남역 카페' }
   ]);
@@ -53,7 +70,7 @@ export const ProfileManager = ({ onBack }) => {
       return;
     }
 
-    const slot = {
+    const slot: AvailableSlot = {
       ...newSlot,
       id: Date.now()
     };
@@ -68,7 +85,7 @@ export const ProfileManager = ({ onBack }) => {
     });
   };
 
-  const handleRemoveSlot = (slotId) => {
+  const handleRemoveSlot = (slotId: number) => {
     setAvailableSlots(availableSlots.filter(slot => slot.id !== slotId));
     toast({
       title: "일정이 삭제되었습니다",
@@ -76,7 +93,7 @@ export const ProfileManager = ({ onBack }) => {
     });
   };
 
-  const addExpertise = (expertise) => {
+  const addExpertise = (expertise: string) => {
     if (expertise && !profile.expertise.includes(expertise)) {
       setProfile({
         ...profile,
@@ -85,7 +102,7 @@ export const ProfileManager = ({ onBack }) => {
     }
   };
 
-  const removeExpertise = (expertise) => {
+  const removeExpertise = (expertise: string) => {
     setProfile({
       ...profile,
       expertise: profile.expertise.filter(e => e !== expertise)
@@ -187,17 +204,21 @@ export const ProfileManager = ({ onBack }) => {
                   placeholder="새 전문 분야 추가"
                   onKeyPress={(e) => {
                     if (e.key === 'Enter') {
-                      addExpertise(e.target.value);
-                      e.target.value = '';
+                      const target = e.target as HTMLInputElement;
+                      addExpertise(target.value);
+                      target.value = '';
                     }
                   }}
                 />
                 <Button
                   size="sm"
                   onClick={(e) => {
-                    const input = e.target.parentElement.querySelector('input');
-                    addExpertise(input.value);
-                    input.value = '';
+                    const target = e.target as HTMLButtonElement;
+                    const input = target.parentElement?.querySelector('input') as HTMLInputElement;
+                    if (input) {
+                      addExpertise(input.value);
+                      input.value = '';
+                    }
                   }}
                 >
                   추가

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { ArrowLeft, Calendar, Check, X, Clock, MapPin, User, MessageSquare } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,8 +6,26 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/hooks/use-toast';
 
+interface Consultation {
+  id: number;
+  mentorName: string;
+  menteeName: string;
+  date: string;
+  time: string;
+  type: string;
+  location?: string; // Make location optional
+  message: string;
+  status: string;
+  role: string;
+  reviewed?: boolean;
+}
+
 export const ConsultationManager = ({ onBack }) => {
-  const [consultations, setConsultations] = useState({
+  const [consultations, setConsultations] = useState<{
+    pending: Consultation[];
+    approved: Consultation[];
+    completed: Consultation[];
+  }>({
     pending: [
       {
         id: 1,
@@ -19,7 +36,7 @@ export const ConsultationManager = ({ onBack }) => {
         type: '온라인',
         message: '마케팅 직무로 취업을 준비하고 있는데, 포트폴리오 리뷰와 실무에 대한 조언을 받고 싶습니다.',
         status: 'pending',
-        role: 'mentor' // mentor 또는 mentee
+        role: 'mentor'
       },
       {
         id: 2,
@@ -75,7 +92,7 @@ export const ConsultationManager = ({ onBack }) => {
     ]
   });
 
-  const handleApprove = (consultationId) => {
+  const handleApprove = (consultationId: number) => {
     const consultation = consultations.pending.find(c => c.id === consultationId);
     if (consultation) {
       setConsultations({
@@ -91,7 +108,7 @@ export const ConsultationManager = ({ onBack }) => {
     }
   };
 
-  const handleReject = (consultationId) => {
+  const handleReject = (consultationId: number) => {
     const consultation = consultations.pending.find(c => c.id === consultationId);
     if (consultation) {
       setConsultations({
@@ -106,7 +123,7 @@ export const ConsultationManager = ({ onBack }) => {
     }
   };
 
-  const ConsultationCard = ({ consultation, showActions = false }) => (
+  const ConsultationCard = ({ consultation, showActions = false }: { consultation: Consultation; showActions?: boolean }) => (
     <Card key={consultation.id} className="mb-4">
       <CardContent className="p-4">
         <div className="flex justify-between items-start mb-3">
