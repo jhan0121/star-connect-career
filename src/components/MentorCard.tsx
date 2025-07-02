@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Star, MapPin, Clock, Users } from 'lucide-react';
+import { Star, MapPin, Clock, Users, Shield } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -16,7 +16,13 @@ export const MentorCard = ({ mentor, onClick }) => {
             {mentor.name.charAt(0)}
           </div>
           <div className="flex-1">
-            <h3 className="font-bold text-lg text-gray-900">{mentor.name}</h3>
+            <div className="flex items-center space-x-2 mb-1">
+              <h3 className="font-bold text-lg text-gray-900">{mentor.name}</h3>
+              <div className="flex items-center space-x-1 bg-green-50 px-2 py-1 rounded-full">
+                <Shield className="h-3 w-3 text-green-600" />
+                <span className="text-xs font-medium text-green-700">본인 인증</span>
+              </div>
+            </div>
             <p className="text-gray-600 text-sm">{mentor.title}</p>
             <p className="text-gray-500 text-xs">{mentor.experience} • {mentor.company}</p>
           </div>

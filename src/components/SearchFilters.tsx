@@ -9,7 +9,6 @@ export const SearchFilters = ({ onFilterChange }) => {
   const [selectedExpertise, setSelectedExpertise] = useState([]);
   const [selectedConsultationType, setSelectedConsultationType] = useState([]);
   const [selectedAvailability, setSelectedAvailability] = useState('');
-  const [showFilters, setShowFilters] = useState(false);
 
   const expertiseOptions = [
     '인사관리', '리더십', '조직문화', '커리어 전환',
@@ -67,94 +66,81 @@ export const SearchFilters = ({ onFilterChange }) => {
   return (
     <Card className="mb-6">
       <CardContent className="p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center space-x-2">
-            <Search className="h-5 w-5 text-gray-500" />
-            <h3 className="font-semibold text-gray-900">멘토 검색 및 필터</h3>
-          </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setShowFilters(!showFilters)}
-            className="flex items-center space-x-1"
-          >
-            <Filter className="h-4 w-4" />
-            <span>필터 {showFilters ? '숨기기' : '보기'}</span>
-          </Button>
+        <div className="flex items-center space-x-2 mb-6">
+          <Search className="h-5 w-5 text-gray-500" />
+          <h3 className="font-semibold text-gray-900">멘토 찾기</h3>
         </div>
 
-        {showFilters && (
-          <div className="space-y-6">
-            {/* 전문 분야 필터 */}
-            <div>
-              <h4 className="font-medium text-gray-700 mb-3">전문 분야</h4>
-              <div className="flex flex-wrap gap-2">
-                {expertiseOptions.map((expertise) => (
-                  <Badge
-                    key={expertise}
-                    variant={selectedExpertise.includes(expertise) ? "default" : "outline"}
-                    className="cursor-pointer hover:bg-blue-100 transition-colors"
-                    onClick={() => handleExpertiseToggle(expertise)}
-                  >
-                    {expertise}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-
-            {/* 상담 유형 필터 */}
-            <div>
-              <h4 className="font-medium text-gray-700 mb-3">상담 유형</h4>
-              <div className="flex flex-wrap gap-2">
-                {consultationTypes.map((type) => (
-                  <Badge
-                    key={type}
-                    variant={selectedConsultationType.includes(type) ? "default" : "outline"}
-                    className="cursor-pointer hover:bg-purple-100 transition-colors"
-                    onClick={() => handleConsultationTypeToggle(type)}
-                  >
-                    {type}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-
-            {/* 상담 방식 필터 */}
-            <div>
-              <h4 className="font-medium text-gray-700 mb-3">상담 방식</h4>
-              <div className="flex gap-2">
+        <div className="space-y-6">
+          {/* 전문 분야 필터 */}
+          <div>
+            <h4 className="font-medium text-gray-700 mb-3">전문 분야</h4>
+            <div className="flex flex-wrap gap-2">
+              {expertiseOptions.map((expertise) => (
                 <Badge
-                  variant={selectedAvailability === 'online' ? "default" : "outline"}
-                  className="cursor-pointer hover:bg-green-100 transition-colors"
-                  onClick={() => handleAvailabilityChange('online')}
+                  key={expertise}
+                  variant={selectedExpertise.includes(expertise) ? "default" : "outline"}
+                  className="cursor-pointer hover:bg-blue-100 transition-colors"
+                  onClick={() => handleExpertiseToggle(expertise)}
                 >
-                  온라인
+                  {expertise}
                 </Badge>
-                <Badge
-                  variant={selectedAvailability === 'offline' ? "default" : "outline"}
-                  className="cursor-pointer hover:bg-orange-100 transition-colors"
-                  onClick={() => handleAvailabilityChange('offline')}
-                >
-                  오프라인
-                </Badge>
-              </div>
+              ))}
             </div>
-
-            {/* 필터 초기화 */}
-            {(selectedExpertise.length > 0 || selectedConsultationType.length > 0 || selectedAvailability) && (
-              <div className="pt-4 border-t">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={clearAllFilters}
-                  className="text-gray-600 hover:text-gray-800"
-                >
-                  모든 필터 초기화
-                </Button>
-              </div>
-            )}
           </div>
-        )}
+
+          {/* 상담 유형 필터 */}
+          <div>
+            <h4 className="font-medium text-gray-700 mb-3">상담 유형</h4>
+            <div className="flex flex-wrap gap-2">
+              {consultationTypes.map((type) => (
+                <Badge
+                  key={type}
+                  variant={selectedConsultationType.includes(type) ? "default" : "outline"}
+                  className="cursor-pointer hover:bg-purple-100 transition-colors"
+                  onClick={() => handleConsultationTypeToggle(type)}
+                >
+                  {type}
+                </Badge>
+              ))}
+            </div>
+          </div>
+
+          {/* 상담 방식 필터 */}
+          <div>
+            <h4 className="font-medium text-gray-700 mb-3">상담 방식</h4>
+            <div className="flex gap-2">
+              <Badge
+                variant={selectedAvailability === 'online' ? "default" : "outline"}
+                className="cursor-pointer hover:bg-green-100 transition-colors"
+                onClick={() => handleAvailabilityChange('online')}
+              >
+                온라인
+              </Badge>
+              <Badge
+                variant={selectedAvailability === 'offline' ? "default" : "outline"}
+                className="cursor-pointer hover:bg-orange-100 transition-colors"
+                onClick={() => handleAvailabilityChange('offline')}
+              >
+                오프라인
+              </Badge>
+            </div>
+          </div>
+
+          {/* 필터 초기화 */}
+          {(selectedExpertise.length > 0 || selectedConsultationType.length > 0 || selectedAvailability) && (
+            <div className="pt-4 border-t">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={clearAllFilters}
+                className="text-gray-600 hover:text-gray-800"
+              >
+                모든 필터 초기화
+              </Button>
+            </div>
+          )}
+        </div>
       </CardContent>
     </Card>
   );

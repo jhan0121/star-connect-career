@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Calendar, Check, X, Clock, MapPin, User, MessageSquare, Star, MessageCircle } from 'lucide-react';
+import { MenteeRatingModal } from './MenteeRatingModal';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -138,6 +139,7 @@ export const ConsultationManager = ({ onBack, onStartChat, role }: ConsultationM
   const [reviewRating, setReviewRating] = useState(0);
   const [reviewContent, setReviewContent] = useState('');
   const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
+  const [showMenteeRating, setShowMenteeRating] = useState(false);
 
   const handleApprove = (consultationId: number) => {
     const consultation = consultations.pending.find(c => c.id === consultationId);
@@ -318,15 +320,31 @@ export const ConsultationManager = ({ onBack, onStartChat, role }: ConsultationM
           )}
 
           {consultation.status === 'completed' && !consultation.reviewed && (
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => handleStartReview(consultation)}
-              className="flex items-center space-x-1"
-            >
-              <Star className="h-4 w-4" />
-              <span>후기 작성</span>
-            </Button>
+            <>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => handleStartReview(consultation)}
+                className="flex items-center space-x-1"
+              >
+                <Star className="h-4 w-4" />
+                <span>후기 작성</span>
+              </Button>
+              {role === 'mentor' && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    setSelectedConsultation(consultation);
+                    setShowMenteeRating(true);
+                  }}
+                  className="flex items-center space-x-1"
+                >
+                  <User className="h-4 w-4" />
+                  <span>멘티 평가</span>
+                </Button>
+              )}
+            </>
           )}
         </div>
 
@@ -591,6 +609,17 @@ export const ConsultationManager = ({ onBack, onStartChat, role }: ConsultationM
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Mentee Rating Modal */}
+      <MenteeRatingModal
+        isOpen={showMenteeRating}
+        onClose={() => setShowMenteeRating(false)}
+        menteeName={selectedConsultation?.menteeName || ''}
+        onSubmitRating={(rating, comment) => {
+          // Handle mentee rating submission
+          console.log('Mentee rating:', rating, comment);
+        }}
+      />
     </div>
   );
 };

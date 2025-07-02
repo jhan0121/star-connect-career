@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { ArrowLeft, User, Clock, MapPin, Plus, Edit, Trash2 } from 'lucide-react';
+import { ArrowLeft, User, Clock, MapPin, Plus, Edit, Trash2, Shield, Star, Repeat } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from '@/hooks/use-toast';
 
 interface AvailableSlot {
@@ -47,10 +48,14 @@ export const ProfileManager = ({ onBack }) => {
     date: '',
     time: '',
     type: '온라인',
-    location: ''
+    location: '',
+    isRecurring: false,
+    recurringDay: '',
+    recurringTime: ''
   });
 
   const [showAddSlot, setShowAddSlot] = useState(false);
+  const [menteeRating] = useState(4.7); // Mock mentee rating
 
   const handleProfileSave = () => {
     toast({
@@ -76,7 +81,7 @@ export const ProfileManager = ({ onBack }) => {
     };
     
     setAvailableSlots([...availableSlots, slot]);
-    setNewSlot({ date: '', time: '', type: '온라인', location: '' });
+    setNewSlot({ date: '', time: '', type: '온라인', location: '', isRecurring: false, recurringDay: '', recurringTime: '' });
     setShowAddSlot(false);
     
     toast({
@@ -124,9 +129,17 @@ export const ProfileManager = ({ onBack }) => {
       {/* Profile Management */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="flex items-center space-x-2">
+          <CardTitle className="flex items-center space-x-3">
             <User className="h-5 w-5" />
             <span>멘토 프로필 관리</span>
+            <div className="flex items-center space-x-1 bg-green-50 px-2 py-1 rounded-full">
+              <Shield className="h-3 w-3 text-green-600" />
+              <span className="text-xs font-medium text-green-700">본인 인증 완료</span>
+            </div>
+            <div className="flex items-center space-x-1 bg-blue-50 px-2 py-1 rounded-full">
+              <Star className="h-3 w-3 text-blue-600 fill-current" />
+              <span className="text-xs font-medium text-blue-700">멘티 평판 {menteeRating}점</span>
+            </div>
           </CardTitle>
           <Button
             onClick={() => isEditing ? handleProfileSave() : setIsEditing(true)}
@@ -318,6 +331,55 @@ export const ProfileManager = ({ onBack }) => {
                   />
                 </div>
               )}
+              
+              {/* 주기적 일정 설정 */}
+              <div className="mb-3">
+                <div className="flex items-center space-x-2 mb-2">
+                  <Checkbox 
+                    id="recurring"
+                    checked={newSlot.isRecurring}
+                    onCheckedChange={(checked) => setNewSlot({...newSlot, isRecurring: !!checked})}
+                  />
+                  <label htmlFor="recurring" className="flex items-center space-x-1 text-sm font-medium text-gray-700">
+                    <Repeat className="h-4 w-4" />
+                    <span>주기적 일정 설정</span>
+                  </label>
+                </div>
+                
+                {newSlot.isRecurring && (
+                  <div className="grid grid-cols-2 gap-3 pl-6">
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">요일</label>
+                      <Select
+                        value={newSlot.recurringDay}
+                        onValueChange={(value) => setNewSlot({...newSlot, recurringDay: value})}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="요일 선택" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="매주 월요일">매주 월요일</SelectItem>
+                          <SelectItem value="매주 화요일">매주 화요일</SelectItem>
+                          <SelectItem value="매주 수요일">매주 수요일</SelectItem>
+                          <SelectItem value="매주 목요일">매주 목요일</SelectItem>
+                          <SelectItem value="매주 금요일">매주 금요일</SelectItem>
+                          <SelectItem value="매주 토요일">매주 토요일</SelectItem>
+                          <SelectItem value="매주 일요일">매주 일요일</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">시간</label>
+                      <Input
+                        type="time"
+                        value={newSlot.recurringTime}
+                        onChange={(e) => setNewSlot({...newSlot, recurringTime: e.target.value})}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+              
               <div className="flex space-x-2">
                 <Button onClick={handleAddSlot} size="sm">추가</Button>
                 <Button

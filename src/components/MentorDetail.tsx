@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { ArrowLeft, Star, MapPin, Clock, Calendar, User, MessageSquare, ThumbsUp } from 'lucide-react';
+import { ArrowLeft, Star, MapPin, Clock, Calendar, User, MessageSquare, ThumbsUp, Shield } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -121,7 +121,13 @@ export const MentorDetail = ({ mentor, onBack, onBookingComplete, onStartChat }:
               {mentor.name.charAt(0)}
             </div>
             <div className="flex-1">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">{mentor.name}</h1>
+              <div className="flex items-center space-x-3 mb-2">
+                <h1 className="text-3xl font-bold text-gray-900">{mentor.name}</h1>
+                <div className="flex items-center space-x-1 bg-green-50 px-3 py-1 rounded-full">
+                  <Shield className="h-4 w-4 text-green-600" />
+                  <span className="text-sm font-medium text-green-700">본인 인증 완료</span>
+                </div>
+              </div>
               <p className="text-xl text-gray-600 mb-1">{mentor.title}</p>
               <p className="text-gray-500 mb-4">{mentor.experience} • {mentor.company}</p>
               
