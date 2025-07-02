@@ -1,17 +1,23 @@
-
 import React, { useState } from 'react';
 import { MentorCard } from '@/components/MentorCard';
 import { SearchFilters } from '@/components/SearchFilters';
 import { MentorDetail } from '@/components/MentorDetail';
 import { ProfileManager } from '@/components/ProfileManager';
 import { ConsultationManager } from '@/components/ConsultationManager';
-import { Star, Users, Calendar, MessageCircle } from 'lucide-react';
+import { ChatWindow } from '@/components/ChatWindow';
+import { NotificationCenter } from '@/components/NotificationCenter';
+import { NotificationProvider } from '@/contexts/NotificationContext';
+import { Star, Users, Calendar, MessageCircle, Bell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
-const Index = () => {
+const IndexContent = () => {
   const [currentView, setCurrentView] = useState('home');
   const [selectedMentor, setSelectedMentor] = useState(null);
   const [filteredMentors, setFilteredMentors] = useState([]);
+  const [showChat, setShowChat] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [chatRecipient, setChatRecipient] = useState({ name: '', role: 'mentor' });
 
   // Mock 데이터
   const mockMentors = [
@@ -111,6 +117,11 @@ const Index = () => {
     setFilteredMentors(filtered);
   };
 
+  const handleStartChat = (recipientName, recipientRole = 'mentor') => {
+    setChatRecipient({ name: recipientName, role: recipientRole });
+    setShowChat(true);
+  };
+
   const renderCurrentView = () => {
     switch (currentView) {
       case 'mentorDetail':
@@ -119,12 +130,18 @@ const Index = () => {
             mentor={selectedMentor} 
             onBack={() => setCurrentView('home')}
             onBookingComplete={() => setCurrentView('consultations')}
+            onStartChat={handleStartChat}
           />
         );
       case 'profile':
         return <ProfileManager onBack={() => setCurrentView('home')} />;
       case 'consultations':
-        return <ConsultationManager onBack={() => setCurrentView('home')} />;
+        return (
+          <ConsultationManager 
+            onBack={() => setCurrentView('home')}
+            onStartChat={handleStartChat}
+          />
+        );
       default:
         return (
           <div className="space-y-8">
@@ -184,6 +201,14 @@ const Index = () => {
                 <MessageCircle className="h-4 w-4" />
                 <span>프로필 관리</span>
               </Button>
+
+              <Button
+                variant="ghost"
+                onClick={() => setShowNotifications(true)}
+                className="relative"
+              >
+                <Bell className="h-4 w-4" />
+              </Button>
             </nav>
           </div>
         </div>
@@ -205,7 +230,29 @@ const Index = () => {
         
         {renderCurrentView()}
       </main>
+
+      {/* Chat Window */}
+      <ChatWindow
+        isOpen={showChat}
+        onClose={() => setShowChat(false)}
+        recipientName={chatRecipient.name}
+        recipientRole={chatRecipient.role}
+      />
+
+      {/* Notification Center */}
+      <NotificationCenter
+        isOpen={showNotifications}
+        onClose={() => setShowNotifications(false)}
+      />
     </div>
+  );
+};
+
+const Index = () => {
+  return (
+    <NotificationProvider>
+      <IndexContent />
+    </NotificationProvider>
   );
 };
 
