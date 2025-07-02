@@ -17,7 +17,7 @@ const IndexContent = () => {
   const [filteredMentors, setFilteredMentors] = useState([]);
   const [showChat, setShowChat] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
-  const [chatRecipient, setChatRecipient] = useState({ name: '', role: 'mentor' });
+  const [chatRecipient, setChatRecipient] = useState<{ name: string; role: 'mentor' | 'mentee' }>({ name: '', role: 'mentor' });
 
   // Mock 데이터
   const mockMentors = [
@@ -117,7 +117,7 @@ const IndexContent = () => {
     setFilteredMentors(filtered);
   };
 
-  const handleStartChat = (recipientName, recipientRole = 'mentor') => {
+  const handleStartChat = (recipientName: string, recipientRole: 'mentor' | 'mentee' = 'mentor') => {
     setChatRecipient({ name: recipientName, role: recipientRole });
     setShowChat(true);
   };

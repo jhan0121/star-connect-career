@@ -7,7 +7,14 @@ import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from '@/hooks/use-toast';
 
-export const MentorDetail = ({ mentor, onBack, onBookingComplete }) => {
+interface MentorDetailProps {
+  mentor: any;
+  onBack: () => void;
+  onBookingComplete: () => void;
+  onStartChat: (recipientName: string, recipientRole?: string) => void;
+}
+
+export const MentorDetail = ({ mentor, onBack, onBookingComplete, onStartChat }: MentorDetailProps) => {
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [consultationMessage, setConsultationMessage] = useState('');
   const [showBookingForm, setShowBookingForm] = useState(false);
@@ -103,7 +110,16 @@ export const MentorDetail = ({ mentor, onBack, onBookingComplete }) => {
                 </div>
               </div>
 
-              <p className="text-gray-700 leading-relaxed">{mentor.description}</p>
+              <p className="text-gray-700 leading-relaxed mb-4">{mentor.description}</p>
+              
+              <Button
+                onClick={() => onStartChat(mentor.name, 'mentor')}
+                variant="outline"
+                className="flex items-center space-x-2"
+              >
+                <MessageSquare className="h-4 w-4" />
+                <span>메시지 보내기</span>
+              </Button>
             </div>
           </div>
 
