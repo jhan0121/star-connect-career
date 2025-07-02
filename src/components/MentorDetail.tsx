@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { ArrowLeft, Star, MapPin, Clock, Calendar, User, MessageSquare } from 'lucide-react';
+import { ArrowLeft, Star, MapPin, Clock, Calendar, User, MessageSquare, ThumbsUp } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -18,6 +18,40 @@ export const MentorDetail = ({ mentor, onBack, onBookingComplete, onStartChat }:
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [consultationMessage, setConsultationMessage] = useState('');
   const [showBookingForm, setShowBookingForm] = useState(false);
+  
+  // Mock reviews with recommendation count
+  const [reviews, setReviews] = useState([
+    {
+      id: 1,
+      author: "김취준생",
+      rating: 5,
+      content: "실무에 대한 구체적인 조언을 해주셔서 정말 도움이 되었습니다. 포트폴리오 피드백도 상세하게 해주셨어요!",
+      date: "2025-06-28",
+      tags: ["포트폴리오", "실무조언"],
+      recommendationCount: 15,
+      isRecommended: false
+    },
+    {
+      id: 2,
+      author: "박신입생",
+      rating: 5,
+      content: "면접 준비에 대한 노하우를 알려주셔서 자신감이 생겼습니다. 따뜻하고 친절하게 상담해주셨어요.",
+      date: "2025-06-25",
+      tags: ["면접준비", "자신감상승"],
+      recommendationCount: 8,
+      isRecommended: false
+    },
+    {
+      id: 3,
+      author: "이직준비중",
+      rating: 4,
+      content: "커리어 방향성에 대해 깊이 있게 상담받을 수 있어서 좋았습니다. 시간이 조금 짧았던 것이 아쉬워요.",
+      date: "2025-06-20",
+      tags: ["커리어상담", "방향성"],
+      recommendationCount: 23,
+      isRecommended: true
+    }
+  ]);
 
   const handleSlotSelect = (slot) => {
     setSelectedSlot(slot);
@@ -47,32 +81,25 @@ export const MentorDetail = ({ mentor, onBack, onBookingComplete, onStartChat }:
     onBookingComplete();
   };
 
-  const mockReviews = [
-    {
-      id: 1,
-      author: "김취준생",
-      rating: 5,
-      content: "실무에 대한 구체적인 조언을 해주셔서 정말 도움이 되었습니다. 포트폴리오 피드백도 상세하게 해주셨어요!",
-      date: "2025-06-28",
-      tags: ["포트폴리오", "실무조언"]
-    },
-    {
-      id: 2,
-      author: "박신입생",
-      rating: 5,
-      content: "면접 준비에 대한 노하우를 알려주셔서 자신감이 생겼습니다. 따뜻하고 친절하게 상담해주셨어요.",
-      date: "2025-06-25",
-      tags: ["면접준비", "자신감상승"]
-    },
-    {
-      id: 3,
-      author: "이직준비중",
-      rating: 4,
-      content: "커리어 방향성에 대해 깊이 있게 상담받을 수 있어서 좋았습니다. 시간이 조금 짧았던 것이 아쉬워요.",
-      date: "2025-06-20",
-      tags: ["커리어상담", "방향성"]
-    }
-  ];
+  // Handle recommendation toggle
+  const handleRecommendToggle = (reviewId: number) => {
+    setReviews(prevReviews => 
+      prevReviews.map(review => 
+        review.id === reviewId 
+          ? {
+              ...review,
+              isRecommended: !review.isRecommended,
+              recommendationCount: review.isRecommended 
+                ? review.recommendationCount - 1 
+                : review.recommendationCount + 1
+            }
+          : review
+      )
+    );
+  };
+
+  // Sort reviews by recommendation count (descending)
+  const sortedReviews = [...reviews].sort((a, b) => b.recommendationCount - a.recommendationCount);
 
   return (
     <div className="space-y-6">
@@ -240,11 +267,11 @@ export const MentorDetail = ({ mentor, onBack, onBookingComplete, onStartChat }:
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <MessageSquare className="h-5 w-5" />
-            <span>상담 후기 ({mockReviews.length}개)</span>
+            <span>상담 후기 ({sortedReviews.length}개)</span>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {mockReviews.map(review => (
+          {sortedReviews.map(review => (
             <div key={review.id} className="border-b pb-4 last:border-b-0">
               <div className="flex items-start justify-between mb-2">
                 <div className="flex items-center space-x-2">
@@ -265,13 +292,30 @@ export const MentorDetail = ({ mentor, onBack, onBookingComplete, onStartChat }:
                 </div>
                 <span className="text-xs text-gray-500">{review.date}</span>
               </div>
-              <p className="text-gray-700 mb-2">{review.content}</p>
-              <div className="flex gap-1">
-                {review.tags.map((tag, index) => (
-                  <Badge key={index} variant="outline" className="text-xs">
-                    #{tag}
-                  </Badge>
-                ))}
+              <p className="text-gray-700 mb-3">{review.content}</p>
+              <div className="flex items-center justify-between">
+                <div className="flex gap-1">
+                  {review.tags.map((tag, index) => (
+                    <Badge key={index} variant="outline" className="text-xs">
+                      #{tag}
+                    </Badge>
+                  ))}
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleRecommendToggle(review.id)}
+                    className={`flex items-center space-x-1 ${
+                      review.isRecommended 
+                        ? 'text-blue-600 bg-blue-50 hover:bg-blue-100' 
+                        : 'text-gray-500 hover:text-blue-600 hover:bg-blue-50'
+                    }`}
+                  >
+                    <ThumbsUp className={`h-4 w-4 ${review.isRecommended ? 'fill-current' : ''}`} />
+                    <span className="text-sm font-medium">{review.recommendationCount}</span>
+                  </Button>
+                </div>
               </div>
             </div>
           ))}
