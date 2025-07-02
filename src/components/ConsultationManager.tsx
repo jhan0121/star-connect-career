@@ -27,17 +27,21 @@ interface Consultation {
   menteeReview?: string;
 }
 
-export const ConsultationManager = ({ onBack, onStartChat }) => {
+interface ConsultationManagerProps {
+  onBack: () => void;
+  onStartChat: (recipientName: string, recipientRole: 'mentor' | 'mentee') => void;
+  role: 'mentor' | 'mentee';
+}
+
+export const ConsultationManager = ({ onBack, onStartChat, role }: ConsultationManagerProps) => {
   const { addNotification } = useNotifications();
-  const [consultations, setConsultations] = useState<{
-    pending: Consultation[];
-    approved: Consultation[];
-    completed: Consultation[];
-  }>({
+  // Mock data - filter by role
+  const allConsultations = {
     pending: [
+      // As mentor - receiving requests
       {
         id: 1,
-        mentorName: '최시니어',
+        mentorName: '나',
         menteeName: '김취준생',
         date: '2025-07-10',
         time: '19:00',
@@ -46,6 +50,7 @@ export const ConsultationManager = ({ onBack, onStartChat }) => {
         status: 'pending',
         role: 'mentor'
       },
+      // As mentee - making requests
       {
         id: 2,
         mentorName: '박주니어',
@@ -59,6 +64,7 @@ export const ConsultationManager = ({ onBack, onStartChat }) => {
       }
     ],
     approved: [
+      // As mentee
       {
         id: 3,
         mentorName: '김마케터',
@@ -70,9 +76,22 @@ export const ConsultationManager = ({ onBack, onStartChat }) => {
         message: '디지털 마케팅 전략에 대해 상담받고 싶습니다.',
         status: 'approved',
         role: 'mentee'
+      },
+      // As mentor
+      {
+        id: 6,
+        mentorName: '나',
+        menteeName: '이신입생',
+        date: '2025-07-16',
+        time: '19:00',
+        type: '온라인',
+        message: '커리어 전환에 대한 조언을 구하고 싶습니다.',
+        status: 'approved',
+        role: 'mentor'
       }
     ],
     completed: [
+      // As mentee
       {
         id: 4,
         mentorName: '최시니어',
@@ -85,6 +104,7 @@ export const ConsultationManager = ({ onBack, onStartChat }) => {
         role: 'mentee',
         reviewed: true
       },
+      // As mentor
       {
         id: 5,
         mentorName: '나',
@@ -98,6 +118,17 @@ export const ConsultationManager = ({ onBack, onStartChat }) => {
         reviewed: false
       }
     ]
+  };
+
+  // Filter consultations by current role
+  const [consultations, setConsultations] = useState<{
+    pending: Consultation[];
+    approved: Consultation[];
+    completed: Consultation[];
+  }>({
+    pending: allConsultations.pending.filter(c => c.role === role),
+    approved: allConsultations.approved.filter(c => c.role === role),
+    completed: allConsultations.completed.filter(c => c.role === role)
   });
 
   const [showRejectDialog, setShowRejectDialog] = useState(false);
@@ -246,7 +277,7 @@ export const ConsultationManager = ({ onBack, onStartChat }) => {
         </div>
 
         <div className="flex flex-wrap gap-2">
-          {showActions && consultation.role === 'mentor' && consultation.status === 'pending' && (
+          {showActions && role === 'mentor' && consultation.status === 'pending' && (
             <>
               <Button
                 size="sm"
@@ -383,7 +414,7 @@ export const ConsultationManager = ({ onBack, onStartChat }) => {
           <div className="flex justify-between items-center">
             <CardTitle className="flex items-center space-x-2">
               <Calendar className="h-5 w-5" />
-              <span>내 상담 관리</span>
+              <span>{role === 'mentor' ? '멘토 상담 관리' : '멘티 상담 관리'}</span>
             </CardTitle>
             <div className="flex space-x-2">
               <Button

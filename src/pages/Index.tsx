@@ -4,6 +4,7 @@ import { SearchFilters } from '@/components/SearchFilters';
 import { MentorDetail } from '@/components/MentorDetail';
 import { ProfileManager } from '@/components/ProfileManager';
 import { ConsultationManager } from '@/components/ConsultationManager';
+import { ConsultationSelector } from '@/components/ConsultationSelector';
 import { ChatWindow } from '@/components/ChatWindow';
 import { NotificationCenter } from '@/components/NotificationCenter';
 import { NotificationProvider } from '@/contexts/NotificationContext';
@@ -137,9 +138,26 @@ const IndexContent = () => {
         return <ProfileManager onBack={() => setCurrentView('home')} />;
       case 'consultations':
         return (
-          <ConsultationManager 
+          <ConsultationSelector
             onBack={() => setCurrentView('home')}
+            onSelectMentorView={() => setCurrentView('mentorConsultations')}
+            onSelectMenteeView={() => setCurrentView('menteeConsultations')}
+          />
+        );
+      case 'mentorConsultations':
+        return (
+          <ConsultationManager 
+            onBack={() => setCurrentView('consultations')}
             onStartChat={handleStartChat}
+            role="mentor"
+          />
+        );
+      case 'menteeConsultations':
+        return (
+          <ConsultationManager 
+            onBack={() => setCurrentView('consultations')}
+            onStartChat={handleStartChat}
+            role="mentee"
           />
         );
       default:
