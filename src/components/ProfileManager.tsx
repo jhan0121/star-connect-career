@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
+import { AvailableSlotManager } from '@/components/AvailableSlotManager';
 import { toast } from '@/hooks/use-toast';
 
 interface Profile {
@@ -188,6 +189,9 @@ export const ProfileManager = ({ onBack }) => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Available Slot Management */}
+      <AvailableSlotManager />
     </div>
   );
 };

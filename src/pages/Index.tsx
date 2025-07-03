@@ -11,11 +11,13 @@ import { PopularMentors } from '@/components/PopularMentors';
 import { MentorSortFilter } from '@/components/MentorSortFilter';
 import { MenteeReviewModal } from '@/components/MenteeReviewModal';
 import { CommunityFeed } from '@/components/CommunityFeed';
-import { NotificationProvider } from '@/contexts/NotificationContext';
+import { NotificationProvider, useNotifications } from '@/contexts/NotificationContext';
 import { Star, Users, Calendar, MessageCircle, Bell, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 const IndexContent = () => {
+  const { unreadCount } = useNotifications();
   const [currentView, setCurrentView] = useState('home');
   const [selectedMentor, setSelectedMentor] = useState(null);
   const [filteredMentors, setFilteredMentors] = useState([]);
@@ -301,6 +303,14 @@ const IndexContent = () => {
                 className="relative"
               >
                 <Bell className="h-4 w-4" />
+                {unreadCount > 0 && (
+                  <Badge 
+                    variant="destructive" 
+                    className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center text-xs p-0 min-w-[1.25rem]"
+                  >
+                    {unreadCount > 99 ? '99+' : unreadCount}
+                  </Badge>
+                )}
               </Button>
             </nav>
           </div>
@@ -309,52 +319,48 @@ const IndexContent = () => {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {currentView === 'home' && (
-          <div className="text-center mb-12">
-            {/* Hero Section */}
-            <div className="relative bg-gradient-to-br from-blue-50 via-purple-50 to-blue-100 rounded-3xl p-12 mb-8 overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 to-purple-600/10"></div>
-              <div className="relative z-10">
-                <h1 className="text-5xl font-bold text-gray-900 mb-6 leading-tight">
-                  현직자와의 커피챗,<br />
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
-                    당신의 커리어 성장을 연결합니다
-                  </span>
-                </h1>
-                <p className="text-xl text-gray-700 max-w-2xl mx-auto mb-8 leading-relaxed">
-                  경험 많은 현직자들과 1:1로 만나 진짜 현장의 인사이트를 얻고, 
-                  당신만의 커리어 로드맵을 그려보세요.
-                </p>
-                
-                {/* Hero Image Placeholder */}
-                <div className="w-64 h-48 mx-auto bg-gradient-to-br from-blue-200 to-purple-200 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
-                  <div className="text-center">
-                    <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-3 shadow-md">
-                      <Users className="h-8 w-8 text-blue-600" />
-                    </div>
-                    <p className="text-sm text-gray-600 font-medium">커피챗으로 성장하는 사람들</p>
-                  </div>
+        {/* Hero Section */}
+        <div className="relative bg-gradient-to-br from-blue-50 via-purple-50 to-blue-100 rounded-3xl p-12 mb-8 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 to-purple-600/10"></div>
+          <div className="relative z-10">
+            <h1 className="text-5xl font-bold text-gray-900 mb-6 leading-tight">
+              현직자와의 커피챗,<br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
+                당신의 커리어 성장을 연결합니다
+              </span>
+            </h1>
+            <p className="text-xl text-gray-700 max-w-2xl mx-auto mb-8 leading-relaxed">
+              경험 많은 현직자들과 1:1로 만나 진짜 현장의 인사이트를 얻고, 
+              당신만의 커리어 로드맵을 그려보세요.
+            </p>
+            
+            {/* Hero Image Placeholder */}
+            <div className="w-64 h-48 mx-auto bg-gradient-to-br from-blue-200 to-purple-200 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-3 shadow-md">
+                  <Users className="h-8 w-8 text-blue-600" />
                 </div>
+                <p className="text-sm text-gray-600 font-medium">커피챗으로 성장하는 사람들</p>
+              </div>
+            </div>
 
-                {/* Stats */}
-                <div className="flex justify-center space-x-8 text-center">
-                  <div>
-                    <div className="text-2xl font-bold text-blue-600">1,200+</div>
-                    <div className="text-sm text-gray-600">등록된 멘토</div>
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold text-purple-600">5,000+</div>
-                    <div className="text-sm text-gray-600">완료된 상담</div>
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold text-green-600">4.8★</div>
-                    <div className="text-sm text-gray-600">평균 만족도</div>
-                  </div>
-                </div>
+            {/* Stats */}
+            <div className="flex justify-center space-x-8 text-center">
+              <div>
+                <div className="text-2xl font-bold text-blue-600">1,200+</div>
+                <div className="text-sm text-gray-600">등록된 멘토</div>
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-purple-600">5,000+</div>
+                <div className="text-sm text-gray-600">완료된 상담</div>
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-green-600">4.8★</div>
+                <div className="text-sm text-gray-600">평균 만족도</div>
               </div>
             </div>
           </div>
-        )}
+        </div>
         
         {renderCurrentView()}
       </main>

@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Plus, Calendar, Clock, MapPin, Trash2 } from 'lucide-react';
+import { Plus, Calendar, Clock, MapPin, Trash2, RotateCcw } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -8,6 +8,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { RecurringScheduleManager } from '@/components/RecurringScheduleManager';
 import { toast } from '@/hooks/use-toast';
 
 interface TimeSlot {
@@ -129,99 +131,124 @@ export const AvailableSlotManager = ({ onSlotChange }: AvailableSlotManagerProps
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex justify-between items-center">
-          <CardTitle className="flex items-center space-x-2">
-            <Calendar className="h-5 w-5" />
-            <span>상담 가능 일정 관리</span>
-          </CardTitle>
-          <Button onClick={() => setShowAddDialog(true)} className="flex items-center space-x-2">
-            <Plus className="h-4 w-4" />
-            <span>일정 추가</span>
-          </Button>
-        </div>
-      </CardHeader>
-      <CardContent>
-        {slots.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
-            <Calendar className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-            <p>등록된 상담 가능 시간이 없습니다.</p>
-            <p className="text-sm">상담 시간을 추가해보세요.</p>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {slots.map(slot => (
-              <div key={slot.id} className={`p-4 border rounded-lg ${!slot.isAvailable ? 'bg-gray-50 opacity-60' : ''}`}>
-                <div className="flex justify-between items-start">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-3 mb-2">
-                      <div className="flex items-center space-x-1">
-                        <Calendar className="h-4 w-4 text-gray-500" />
-                        <span className="font-medium">{slot.date}</span>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <Clock className="h-4 w-4 text-gray-500" />
-                        <span>{slot.time}</span>
-                      </div>
-                      <Badge variant={getTypeBadgeVariant(slot.type)}>
-                        {getTypeLabel(slot.type)}
-                      </Badge>
-                    </div>
-                    {slot.location && (
-                      <div className="flex items-center space-x-1 text-sm text-gray-600">
-                        <MapPin className="h-4 w-4" />
-                        <span>{slot.location}</span>
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="flex items-center space-x-2">
-                      <Checkbox
-                        checked={slot.isAvailable}
-                        onCheckedChange={() => handleToggleAvailability(slot.id)}
-                      />
-                      <span className="text-xs text-gray-500">예약 가능</span>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleDeleteSlot(slot.id)}
-                      className="text-red-600 hover:text-red-700"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
+    <div className="space-y-6">
+      <Tabs defaultValue="individual" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="individual" className="flex items-center space-x-2">
+            <Calendar className="h-4 w-4" />
+            <span>개별 일정</span>
+          </TabsTrigger>
+          <TabsTrigger value="recurring" className="flex items-center space-x-2">
+            <RotateCcw className="h-4 w-4" />
+            <span>주기적 일정</span>
+          </TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="individual" className="mt-6">
+          <Card>
+            <CardHeader>
+              <div className="flex justify-between items-center">
+                <CardTitle className="flex items-center space-x-2">
+                  <Calendar className="h-5 w-5" />
+                  <span>개별 상담 일정 관리</span>
+                </CardTitle>
+                <Button onClick={() => setShowAddDialog(true)} className="flex items-center space-x-2">
+                  <Plus className="h-4 w-4" />
+                  <span>일정 추가</span>
+                </Button>
               </div>
-            ))}
-          </div>
-        )}
-      </CardContent>
+            </CardHeader>
+            <CardContent>
+              {slots.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  <Calendar className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                  <p>등록된 상담 가능 시간이 없습니다.</p>
+                  <p className="text-sm">상담 시간을 추가해보세요.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {slots.map(slot => (
+                    <div key={slot.id} className={`p-4 border rounded-lg ${!slot.isAvailable ? 'bg-gray-50 opacity-60' : 'bg-white'} shadow-sm hover:shadow-md transition-shadow`}>
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-3 mb-2">
+                            <div className="flex items-center space-x-1">
+                              <Calendar className="h-4 w-4 text-gray-500" />
+                              <span className="font-medium">{slot.date}</span>
+                            </div>
+                            <div className="flex items-center space-x-1">
+                              <Clock className="h-4 w-4 text-gray-500" />
+                              <span>{slot.time}</span>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-2 mb-2">
+                            <Badge variant={getTypeBadgeVariant(slot.type)}>
+                              {getTypeLabel(slot.type)}
+                            </Badge>
+                            <Badge variant={slot.isAvailable ? 'default' : 'secondary'}>
+                              {slot.isAvailable ? '예약 가능' : '예약 불가'}
+                            </Badge>
+                          </div>
+                          {slot.location && (
+                            <div className="flex items-center space-x-1 text-sm text-gray-600">
+                              <MapPin className="h-4 w-4" />
+                              <span>{slot.location}</span>
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex flex-col space-y-2 ml-4">
+                          <Checkbox
+                            checked={slot.isAvailable}
+                            onCheckedChange={() => handleToggleAvailability(slot.id)}
+                          />
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDeleteSlot(slot.id)}
+                            className="text-red-600 hover:text-red-700 p-1"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="recurring" className="mt-6">
+          <RecurringScheduleManager />
+        </TabsContent>
+      </Tabs>
 
-      {/* Add Slot Dialog */}
+      {/* Add Individual Slot Dialog */}
       <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>새 상담 시간 추가</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">날짜</label>
-              <Input
-                type="date"
-                value={newSlot.date}
-                onChange={(e) => setNewSlot({ ...newSlot, date: e.target.value })}
-                min={new Date().toISOString().split('T')[0]}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">시간</label>
-              <Input
-                type="time"
-                value={newSlot.time}
-                onChange={(e) => setNewSlot({ ...newSlot, time: e.target.value })}
-              />
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">날짜</label>
+                <Input
+                  type="date"
+                  value={newSlot.date}
+                  onChange={(e) => setNewSlot({ ...newSlot, date: e.target.value })}
+                  min={new Date().toISOString().split('T')[0]}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">시간</label>
+                <Input
+                  type="time"
+                  value={newSlot.time}
+                  onChange={(e) => setNewSlot({ ...newSlot, time: e.target.value })}
+                />
+              </div>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">상담 방식</label>
@@ -259,6 +286,6 @@ export const AvailableSlotManager = ({ onSlotChange }: AvailableSlotManagerProps
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </Card>
+    </div>
   );
 };

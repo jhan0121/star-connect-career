@@ -4,13 +4,14 @@ import { toast } from '@/hooks/use-toast';
 
 interface Notification {
   id: string;
-  type: 'consultation_request' | 'consultation_accepted' | 'consultation_rejected' | 'new_message' | 'consultation_completed';
+  type: 'consultation_request' | 'consultation_accepted' | 'consultation_rejected' | 'new_message' | 'consultation_completed' | 'community_comment';
   title: string;
   message: string;
   timestamp: Date;
   read: boolean;
   userId?: string;
   consultationId?: number;
+  postId?: string;
 }
 
 interface NotificationContextType {
@@ -19,6 +20,10 @@ interface NotificationContextType {
   addNotification: (notification: Omit<Notification, 'id' | 'timestamp' | 'read'>) => void;
   markAsRead: (id: string) => void;
   markAllAsRead: () => void;
+  // 새로운 알림 트리거 함수들
+  notifyConsultationApproved: (mentorName: string, consultationId: number) => void;
+  notifyConsultationRejected: (mentorName: string, consultationId: number) => void;
+  notifyCommunityComment: (postTitle: string, commenterName: string, postId: string) => void;
 }
 
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
@@ -65,6 +70,34 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
     );
   };
 
+  // 새로운 알림 트리거 함수들
+  const notifyConsultationApproved = (mentorName: string, consultationId: number) => {
+    addNotification({
+      type: 'consultation_accepted',
+      title: '상담 신청이 승인되었습니다!',
+      message: `${mentorName} 멘토가 상담 신청을 승인했습니다.`,
+      consultationId
+    });
+  };
+
+  const notifyConsultationRejected = (mentorName: string, consultationId: number) => {
+    addNotification({
+      type: 'consultation_rejected',
+      title: '상담 신청이 거절되었습니다',
+      message: `${mentorName} 멘토가 상담 신청을 거절했습니다.`,
+      consultationId
+    });
+  };
+
+  const notifyCommunityComment = (postTitle: string, commenterName: string, postId: string) => {
+    addNotification({
+      type: 'community_comment',
+      title: '새로운 댓글이 달렸습니다',
+      message: `${commenterName}님이 "${postTitle}" 글에 댓글을 작성했습니다.`,
+      postId
+    });
+  };
+
   const unreadCount = notifications.filter(n => !n.read).length;
 
   return (
@@ -73,7 +106,10 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
       unreadCount,
       addNotification,
       markAsRead,
-      markAllAsRead
+      markAllAsRead,
+      notifyConsultationApproved,
+      notifyConsultationRejected,
+      notifyCommunityComment
     }}>
       {children}
     </NotificationContext.Provider>
