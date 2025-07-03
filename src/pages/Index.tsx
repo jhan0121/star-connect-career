@@ -7,6 +7,9 @@ import { ConsultationManager } from '@/components/ConsultationManager';
 import { ConsultationSelector } from '@/components/ConsultationSelector';
 import { ChatWindow } from '@/components/ChatWindow';
 import { NotificationCenter } from '@/components/NotificationCenter';
+import { PopularMentors } from '@/components/PopularMentors';
+import { MentorSortFilter } from '@/components/MentorSortFilter';
+import { MenteeReviewModal } from '@/components/MenteeReviewModal';
 import { NotificationProvider } from '@/contexts/NotificationContext';
 import { Star, Users, Calendar, MessageCircle, Bell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -18,9 +21,11 @@ const IndexContent = () => {
   const [filteredMentors, setFilteredMentors] = useState([]);
   const [showChat, setShowChat] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [showMenteeReview, setShowMenteeReview] = useState(false);
   const [chatRecipient, setChatRecipient] = useState<{ name: string; role: 'mentor' | 'mentee' }>({ name: '', role: 'mentor' });
+  const [currentSort, setCurrentSort] = useState('latest');
 
-  // Mock 데이터
+  // Mock 데이터 with enhanced ratings
   const mockMentors = [
     {
       id: 1,
@@ -32,7 +37,11 @@ const IndexContent = () => {
       company: '대기업',
       description: '후배들의 성장을 도와주는 것을 즐기는 베테랑 인사 전문가입니다.',
       rating: 4.9,
+      mentorRating: 4.9,
+      menteeRating: 4.7,
       reviewCount: 24,
+      consultationCount: 47,
+      joinDate: '2024-01-15',
       availableSlots: [
         { date: '2025-07-05', time: '19:00', type: '온라인' },
         { date: '2025-07-08', time: '20:00', type: '온라인' },
@@ -51,7 +60,11 @@ const IndexContent = () => {
       company: 'IT 스타트업',
       description: '최신 기술 트렌드와 스타트업 경험을 공유하는 개발자입니다.',
       rating: 4.7,
+      mentorRating: 4.7,
+      menteeRating: 4.8,
       reviewCount: 18,
+      consultationCount: 25,
+      joinDate: '2024-06-20',
       availableSlots: [
         { date: '2025-07-06', time: '19:30', type: '온라인' },
         { date: '2025-07-09', time: '21:00', type: '온라인' },
@@ -70,7 +83,11 @@ const IndexContent = () => {
       company: '중견기업',
       description: '실무 중심의 마케팅 인사이트를 전해드리는 마케팅 전문가입니다.',
       rating: 4.8,
+      mentorRating: 4.8,
+      menteeRating: 4.6,
       reviewCount: 32,
+      consultationCount: 38,
+      joinDate: '2024-03-10',
       availableSlots: [
         { date: '2025-07-07', time: '18:00', type: '온라인' },
         { date: '2025-07-10', time: '19:00', type: '오프라인', location: '홍대입구역 카페' },
@@ -118,9 +135,42 @@ const IndexContent = () => {
     setFilteredMentors(filtered);
   };
 
+  const handleSortChange = (sortType: string) => {
+    setCurrentSort(sortType);
+    let sorted = [...filteredMentors];
+    
+    switch (sortType) {
+      case 'rating':
+        sorted.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+        break;
+      case 'reviews':
+        sorted.sort((a, b) => (b.reviewCount || 0) - (a.reviewCount || 0));
+        break;
+      case 'popular':
+        sorted.sort((a, b) => (b.consultationCount || 0) - (a.consultationCount || 0));
+        break;
+      case 'latest':
+      default:
+        sorted.sort((a, b) => new Date(b.joinDate || '2024-01-01').getTime() - new Date(a.joinDate || '2024-01-01').getTime());
+        break;
+    }
+    
+    setFilteredMentors(sorted);
+  };
+
   const handleStartChat = (recipientName: string, recipientRole: 'mentor' | 'mentee' = 'mentor') => {
     setChatRecipient({ name: recipientName, role: recipientRole });
     setShowChat(true);
+  };
+
+  const handleShowMenteeReview = (mentorName: string) => {
+    setSelectedMentor({ name: mentorName });
+    setShowMenteeReview(true);
+  };
+
+  const handleSubmitReview = (rating: number, review: string, tags: string[]) => {
+    console.log('Review submitted:', { rating, review, tags });
+    // Here you would typically send this to your backend
   };
 
   const renderCurrentView = () => {
@@ -163,15 +213,38 @@ const IndexContent = () => {
       default:
         return (
           <div className="space-y-8">
-            <SearchFilters onFilterChange={handleFilterChange} />
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredMentors.map(mentor => (
-                <MentorCard 
-                  key={mentor.id} 
-                  mentor={mentor} 
-                  onClick={() => handleMentorClick(mentor)}
-                />
-              ))}
+            <div className="flex flex-col lg:flex-row gap-6">
+              <div className="flex-1">
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-2xl font-bold">멘토 찾기</h2>
+                  <MentorSortFilter 
+                    currentSort={currentSort}
+                    onSortChange={handleSortChange}
+                  />
+                </div>
+                <SearchFilters onFilterChange={handleFilterChange} />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                  {filteredMentors.map(mentor => (
+                    <MentorCard 
+                      key={mentor.id} 
+                      mentor={mentor} 
+                      onClick={() => handleMentorClick(mentor)}
+                    />
+                  ))}
+                </div>
+              </div>
+              <div className="lg:w-80">
+                <PopularMentors onMentorClick={handleMentorClick} />
+                <div className="mt-6">
+                  <Button 
+                    onClick={() => handleShowMenteeReview('테스트 멘토')}
+                    variant="outline"
+                    className="w-full"
+                  >
+                    멘토 후기 작성 테스트
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
         );
@@ -296,6 +369,14 @@ const IndexContent = () => {
       <NotificationCenter
         isOpen={showNotifications}
         onClose={() => setShowNotifications(false)}
+      />
+
+      {/* Mentee Review Modal */}
+      <MenteeReviewModal
+        isOpen={showMenteeReview}
+        onClose={() => setShowMenteeReview(false)}
+        mentorName={selectedMentor?.name || ''}
+        onSubmitReview={handleSubmitReview}
       />
     </div>
   );

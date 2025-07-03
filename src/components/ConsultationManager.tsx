@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Calendar, Check, X, Clock, MapPin, User, MessageSquare, Star, MessageCircle } from 'lucide-react';
 import { MenteeRatingModal } from './MenteeRatingModal';
+import { CalendarScheduleView } from './CalendarScheduleView';
+import { AvailableSlotManager } from './AvailableSlotManager';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -36,6 +38,7 @@ interface ConsultationManagerProps {
 
 export const ConsultationManager = ({ onBack, onStartChat, role }: ConsultationManagerProps) => {
   const { addNotification } = useNotifications();
+  
   // Mock data - filter by role
   const allConsultations = {
     pending: [
@@ -140,6 +143,8 @@ export const ConsultationManager = ({ onBack, onStartChat, role }: ConsultationM
   const [reviewContent, setReviewContent] = useState('');
   const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
   const [showMenteeRating, setShowMenteeRating] = useState(false);
+
+  const allConsultationsForCalendar = [...consultations.approved, ...consultations.completed];
 
   const handleApprove = (consultationId: number) => {
     const consultation = consultations.pending.find(c => c.id === consultationId);
@@ -360,60 +365,6 @@ export const ConsultationManager = ({ onBack, onStartChat, role }: ConsultationM
     </Card>
   );
 
-  const CalendarView = () => {
-    const allConsultations = [...consultations.approved, ...consultations.completed];
-    const groupedByDate = allConsultations.reduce((acc, consultation) => {
-      const date = consultation.date;
-      if (!acc[date]) {
-        acc[date] = [];
-      }
-      acc[date].push(consultation);
-      return acc;
-    }, {} as Record<string, Consultation[]>);
-
-    return (
-      <div className="space-y-4">
-        {Object.keys(groupedByDate).length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
-            <Calendar className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-            <p>예정된 상담이 없습니다.</p>
-          </div>
-        ) : (
-          Object.entries(groupedByDate)
-            .sort(([a], [b]) => a.localeCompare(b))
-            .map(([date, dayConsultations]) => (
-              <Card key={date}>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-lg">{date}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    {dayConsultations.map(consultation => (
-                      <div key={consultation.id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                        <div>
-                          <span className="font-medium">
-                            {consultation.time} - {consultation.role === 'mentor' 
-                              ? consultation.menteeName 
-                              : consultation.mentorName}
-                          </span>
-                          <div className="text-sm text-gray-600">
-                            {consultation.type} {consultation.location && `• ${consultation.location}`}
-                          </div>
-                        </div>
-                        <Badge variant={consultation.status === 'approved' ? 'secondary' : 'outline'}>
-                          {consultation.status === 'approved' ? '예정' : '완료'}
-                        </Badge>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            ))
-        )}
-      </div>
-    );
-  };
-
   return (
     <div className="space-y-6">
       {/* Back Button */}
@@ -454,7 +405,10 @@ export const ConsultationManager = ({ onBack, onStartChat, role }: ConsultationM
         </CardHeader>
         <CardContent>
           {viewMode === 'calendar' ? (
-            <CalendarView />
+            <CalendarScheduleView 
+              consultations={allConsultationsForCalendar}
+              role={role}
+            />
           ) : (
             <Tabs defaultValue="pending" className="w-full">
               <TabsList className="grid w-full grid-cols-3">
@@ -535,6 +489,11 @@ export const ConsultationManager = ({ onBack, onStartChat, role }: ConsultationM
           )}
         </CardContent>
       </Card>
+
+      {/* Available Slot Manager for Mentors */}
+      {role === 'mentor' && (
+        <AvailableSlotManager />
+      )}
 
       {/* Reject Dialog */}
       <Dialog open={showRejectDialog} onOpenChange={setShowRejectDialog}>

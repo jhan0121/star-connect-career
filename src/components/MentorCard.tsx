@@ -4,6 +4,7 @@ import { Star, MapPin, Clock, Users, Shield } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { MentorRatingDisplay } from './MentorRatingDisplay';
 
 export const MentorCard = ({ mentor, onClick }) => {
   const nextAvailableSlot = mentor.availableSlots[0];
@@ -26,10 +27,14 @@ export const MentorCard = ({ mentor, onClick }) => {
             <p className="text-gray-600 text-sm">{mentor.title}</p>
             <p className="text-gray-500 text-xs">{mentor.experience} • {mentor.company}</p>
           </div>
-          <div className="flex items-center space-x-1">
-            <Star className="h-4 w-4 text-yellow-400 fill-current" />
-            <span className="text-sm font-medium">{mentor.rating}</span>
-            <span className="text-xs text-gray-500">({mentor.reviewCount})</span>
+          <div className="text-right">
+            <MentorRatingDisplay 
+              mentorRating={mentor.mentorRating}
+              menteeRating={mentor.menteeRating}
+              reviewCount={mentor.reviewCount}
+              role="mentor"
+              size="sm"
+            />
           </div>
         </div>
 
