@@ -73,7 +73,7 @@ export const ProfileManager = ({ onBack }) => {
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="flex items-center space-x-3">
             <User className="h-5 w-5" />
-            <span>멘토 프로필 관리</span>
+            <span>프로필 관리</span>
             <div className="flex items-center space-x-1 bg-green-50 px-2 py-1 rounded-full">
               <Shield className="h-3 w-3 text-green-600" />
               <span className="text-xs font-medium text-green-700">본인 인증 완료</span>
@@ -180,17 +180,6 @@ export const ProfileManager = ({ onBack }) => {
                 </Button>
               </div>
             )}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Note about schedule management */}
-      <Card>
-        <CardContent className="p-6">
-          <div className="text-center text-gray-600">
-            <p className="mb-2">상담 가능 일정 관리는 이제</p>
-            <p className="font-medium text-blue-600">"내 상담 → 멘토 상담 관리"</p>
-            <p className="mt-2">섹션에서 진행해주세요.</p>
           </div>
         </CardContent>
       </Card>

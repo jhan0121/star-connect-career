@@ -106,7 +106,7 @@ export const ConsultationManager = ({ onBack, onStartChat, role }: ConsultationM
         message: '인사 직무 커리어 패스에 대해 상담받았습니다.',
         status: 'completed',
         role: 'mentee',
-        reviewed: true
+        reviewed: false
       },
       // As mentor
       {
@@ -326,15 +326,17 @@ export const ConsultationManager = ({ onBack, onStartChat, role }: ConsultationM
 
           {consultation.status === 'completed' && !consultation.reviewed && (
             <>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => handleStartReview(consultation)}
-                className="flex items-center space-x-1"
-              >
-                <Star className="h-4 w-4" />
-                <span>후기 작성</span>
-              </Button>
+              {role === 'mentee' && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => handleStartReview(consultation)}
+                  className="flex items-center space-x-1"
+                >
+                  <Star className="h-4 w-4" />
+                  <span>후기 작성</span>
+                </Button>
+              )}
               {role === 'mentor' && (
                 <Button
                   size="sm"
@@ -357,7 +359,9 @@ export const ConsultationManager = ({ onBack, onStartChat, role }: ConsultationM
           <div className="mt-3 p-3 bg-green-50 rounded">
             <div className="flex items-center space-x-1 text-green-700">
               <Star className="h-4 w-4 fill-current" />
-              <span className="text-sm font-medium">후기 작성 완료</span>
+              <span className="text-sm font-medium">
+                {role === 'mentee' ? '후기 작성 완료' : '멘티 평가 완료'}
+              </span>
             </div>
           </div>
         )}
@@ -527,9 +531,7 @@ export const ConsultationManager = ({ onBack, onStartChat, role }: ConsultationM
       <Dialog open={showReviewDialog} onOpenChange={setShowReviewDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>
-              {selectedConsultation?.role === 'mentor' ? '멘티 후기 작성' : '멘토 후기 작성'}
-            </DialogTitle>
+            <DialogTitle>멘토 후기 작성</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div>
@@ -577,6 +579,20 @@ export const ConsultationManager = ({ onBack, onStartChat, role }: ConsultationM
         onSubmitRating={(rating, comment) => {
           // Handle mentee rating submission
           console.log('Mentee rating:', rating, comment);
+          
+          // Update consultation as reviewed
+          const updatedConsultations = consultations.completed.map(c => 
+            c.id === selectedConsultation?.id 
+              ? { ...c, reviewed: true }
+              : c
+          );
+
+          setConsultations({
+            ...consultations,
+            completed: updatedConsultations
+          });
+
+          setShowMenteeRating(false);
         }}
       />
     </div>

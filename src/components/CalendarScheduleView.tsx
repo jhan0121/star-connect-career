@@ -27,13 +27,17 @@ export const CalendarScheduleView = ({ consultations, role }: CalendarScheduleVi
 
   // Get consultations for the selected date
   const getConsultationsForDate = (date: Date) => {
-    const dateStr = date.toISOString().split('T')[0];
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const dateStr = `${year}-${month}-${day}`;
+    
     return consultations.filter(consultation => consultation.date === dateStr);
   };
 
   // Get dates that have consultations
   const getDatesWithConsultations = () => {
-    return consultations.map(consultation => new Date(consultation.date));
+    return consultations.map(consultation => new Date(consultation.date + 'T00:00:00'));
   };
 
   const selectedDateConsultations = selectedDate ? getConsultationsForDate(selectedDate) : [];
