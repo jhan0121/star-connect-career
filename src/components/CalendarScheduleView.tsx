@@ -3,7 +3,7 @@ import React from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Clock, MapPin, User } from 'lucide-react';
+import { Clock, MapPin, User, Calendar as CalendarIcon } from 'lucide-react';
 
 interface Consultation {
   id: number;
@@ -57,11 +57,15 @@ export const CalendarScheduleView = ({ consultations, role }: CalendarScheduleVi
               hasConsultation: {
                 backgroundColor: '#3b82f6',
                 color: 'white',
-                borderRadius: '50%'
+                fontWeight: 'bold'
               }
             }}
-            className="rounded-md border"
+            className="rounded-md border w-full"
           />
+          <div className="mt-4 flex items-center space-x-2 text-sm text-gray-600">
+            <div className="w-4 h-4 bg-blue-500 rounded"></div>
+            <span>상담 일정이 있는 날</span>
+          </div>
         </CardContent>
       </Card>
 
@@ -75,7 +79,7 @@ export const CalendarScheduleView = ({ consultations, role }: CalendarScheduleVi
         <CardContent>
           {selectedDateConsultations.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
-              <Calendar className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+              <CalendarIcon className="h-12 w-12 mx-auto mb-4 text-gray-300" />
               <p>선택한 날짜에 상담이 없습니다.</p>
             </div>
           ) : (

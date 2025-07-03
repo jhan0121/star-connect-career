@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { MentorCard } from '@/components/MentorCard';
 import { SearchFilters } from '@/components/SearchFilters';
@@ -13,7 +14,6 @@ import { MenteeReviewModal } from '@/components/MenteeReviewModal';
 import { NotificationProvider } from '@/contexts/NotificationContext';
 import { Star, Users, Calendar, MessageCircle, Bell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 
 const IndexContent = () => {
   const [currentView, setCurrentView] = useState('home');
@@ -163,11 +163,6 @@ const IndexContent = () => {
     setShowChat(true);
   };
 
-  const handleShowMenteeReview = (mentorName: string) => {
-    setSelectedMentor({ name: mentorName });
-    setShowMenteeReview(true);
-  };
-
   const handleSubmitReview = (rating: number, review: string, tags: string[]) => {
     console.log('Review submitted:', { rating, review, tags });
     // Here you would typically send this to your backend
@@ -235,13 +230,17 @@ const IndexContent = () => {
               </div>
               <div className="lg:w-80">
                 <PopularMentors onMentorClick={handleMentorClick} />
-                <div className="mt-6">
+                <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+                  <h3 className="font-medium text-blue-900 mb-2">멘토 후기 작성하기</h3>
+                  <p className="text-sm text-blue-700 mb-3">
+                    상담을 받은 후 "내 상담 → 멘티 상담 관리 → 완료된 상담"에서 후기를 작성할 수 있습니다.
+                  </p>
                   <Button 
-                    onClick={() => handleShowMenteeReview('테스트 멘토')}
+                    onClick={() => setCurrentView('menteeConsultations')}
                     variant="outline"
-                    className="w-full"
+                    className="w-full border-blue-300 text-blue-700 hover:bg-blue-100"
                   >
-                    멘토 후기 작성 테스트
+                    완료된 상담 보기
                   </Button>
                 </div>
               </div>

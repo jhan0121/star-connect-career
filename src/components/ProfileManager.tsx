@@ -1,21 +1,12 @@
+
 import React, { useState } from 'react';
-import { ArrowLeft, User, Clock, MapPin, Plus, Edit, Trash2, Shield, Star, Repeat } from 'lucide-react';
+import { ArrowLeft, User, Star, Shield } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from '@/hooks/use-toast';
-
-interface AvailableSlot {
-  id: number;
-  date: string;
-  time: string;
-  type: string;
-  location?: string;
-}
 
 interface Profile {
   name: string;
@@ -39,22 +30,6 @@ export const ProfileManager = ({ onBack }) => {
     consultationType: ['포트폴리오 리뷰', '디자인 피드백', '커리어 상담']
   });
 
-  const [availableSlots, setAvailableSlots] = useState<AvailableSlot[]>([
-    { id: 1, date: '2025-07-10', time: '19:00', type: '온라인' },
-    { id: 2, date: '2025-07-12', time: '14:00', type: '오프라인', location: '강남역 카페' }
-  ]);
-
-  const [newSlot, setNewSlot] = useState({
-    date: '',
-    time: '',
-    type: '온라인',
-    location: '',
-    isRecurring: false,
-    recurringDay: '',
-    recurringTime: ''
-  });
-
-  const [showAddSlot, setShowAddSlot] = useState(false);
   const [menteeRating] = useState(4.7); // Mock mentee rating
 
   const handleProfileSave = () => {
@@ -63,39 +38,6 @@ export const ProfileManager = ({ onBack }) => {
       description: "멘토 목록에서 업데이트된 정보를 확인할 수 있습니다.",
     });
     setIsEditing(false);
-  };
-
-  const handleAddSlot = () => {
-    if (!newSlot.date || !newSlot.time) {
-      toast({
-        title: "필수 정보를 입력해주세요",
-        description: "날짜와 시간을 모두 입력해야 합니다.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const slot: AvailableSlot = {
-      ...newSlot,
-      id: Date.now()
-    };
-    
-    setAvailableSlots([...availableSlots, slot]);
-    setNewSlot({ date: '', time: '', type: '온라인', location: '', isRecurring: false, recurringDay: '', recurringTime: '' });
-    setShowAddSlot(false);
-    
-    toast({
-      title: "상담 가능 일정이 추가되었습니다!",
-      description: "멘티들이 새로운 일정으로 상담을 예약할 수 있습니다.",
-    });
-  };
-
-  const handleRemoveSlot = (slotId: number) => {
-    setAvailableSlots(availableSlots.filter(slot => slot.id !== slotId));
-    toast({
-      title: "일정이 삭제되었습니다",
-      description: "해당 시간대의 예약이 불가능해집니다.",
-    });
   };
 
   const addExpertise = (expertise: string) => {
@@ -242,156 +184,14 @@ export const ProfileManager = ({ onBack }) => {
         </CardContent>
       </Card>
 
-      {/* Schedule Management */}
+      {/* Note about schedule management */}
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="flex items-center space-x-2">
-            <Clock className="h-5 w-5" />
-            <span>상담 가능 일정 관리</span>
-          </CardTitle>
-          <Button
-            onClick={() => setShowAddSlot(true)}
-            size="sm"
-            className="flex items-center space-x-1"
-          >
-            <Plus className="h-4 w-4" />
-            <span>일정 추가</span>
-          </Button>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            {availableSlots.map(slot => (
-              <div key={slot.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <div className="flex items-center space-x-4">
-                  <div className="text-sm">
-                    <span className="font-medium">{slot.date}</span>
-                    <span className="mx-2">•</span>
-                    <span>{slot.time}</span>
-                  </div>
-                  <div className="flex items-center space-x-1 text-xs text-gray-600">
-                    <MapPin className="h-3 w-3" />
-                    <span>{slot.type} {slot.location && `• ${slot.location}`}</span>
-                  </div>
-                </div>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => handleRemoveSlot(slot.id)}
-                  className="text-red-600 hover:text-red-700"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            ))}
+        <CardContent className="p-6">
+          <div className="text-center text-gray-600">
+            <p className="mb-2">상담 가능 일정 관리는 이제</p>
+            <p className="font-medium text-blue-600">"내 상담 → 멘토 상담 관리"</p>
+            <p className="mt-2">섹션에서 진행해주세요.</p>
           </div>
-
-          {showAddSlot && (
-            <div className="mt-4 p-4 border rounded-lg bg-white">
-              <h4 className="font-medium mb-3">새 일정 추가</h4>
-              <div className="grid grid-cols-2 gap-3 mb-3">
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">날짜</label>
-                  <Input
-                    type="date"
-                    value={newSlot.date}
-                    onChange={(e) => setNewSlot({...newSlot, date: e.target.value})}
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">시간</label>
-                  <Input
-                    type="time"
-                    value={newSlot.time}
-                    onChange={(e) => setNewSlot({...newSlot, time: e.target.value})}
-                  />
-                </div>
-              </div>
-              <div className="mb-3">
-                <label className="block text-xs font-medium text-gray-700 mb-1">상담 방식</label>
-                <Select
-                  value={newSlot.type}
-                  onValueChange={(value) => setNewSlot({...newSlot, type: value})}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="온라인">온라인</SelectItem>
-                    <SelectItem value="오프라인">오프라인</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              {newSlot.type === '오프라인' && (
-                <div className="mb-3">
-                  <label className="block text-xs font-medium text-gray-700 mb-1">장소</label>
-                  <Input
-                    placeholder="예: 강남역 카페"
-                    value={newSlot.location}
-                    onChange={(e) => setNewSlot({...newSlot, location: e.target.value})}
-                  />
-                </div>
-              )}
-              
-              {/* 주기적 일정 설정 */}
-              <div className="mb-3">
-                <div className="flex items-center space-x-2 mb-2">
-                  <Checkbox 
-                    id="recurring"
-                    checked={newSlot.isRecurring}
-                    onCheckedChange={(checked) => setNewSlot({...newSlot, isRecurring: !!checked})}
-                  />
-                  <label htmlFor="recurring" className="flex items-center space-x-1 text-sm font-medium text-gray-700">
-                    <Repeat className="h-4 w-4" />
-                    <span>주기적 일정 설정</span>
-                  </label>
-                </div>
-                
-                {newSlot.isRecurring && (
-                  <div className="grid grid-cols-2 gap-3 pl-6">
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-1">요일</label>
-                      <Select
-                        value={newSlot.recurringDay}
-                        onValueChange={(value) => setNewSlot({...newSlot, recurringDay: value})}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="요일 선택" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="매주 월요일">매주 월요일</SelectItem>
-                          <SelectItem value="매주 화요일">매주 화요일</SelectItem>
-                          <SelectItem value="매주 수요일">매주 수요일</SelectItem>
-                          <SelectItem value="매주 목요일">매주 목요일</SelectItem>
-                          <SelectItem value="매주 금요일">매주 금요일</SelectItem>
-                          <SelectItem value="매주 토요일">매주 토요일</SelectItem>
-                          <SelectItem value="매주 일요일">매주 일요일</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-1">시간</label>
-                      <Input
-                        type="time"
-                        value={newSlot.recurringTime}
-                        onChange={(e) => setNewSlot({...newSlot, recurringTime: e.target.value})}
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
-              
-              <div className="flex space-x-2">
-                <Button onClick={handleAddSlot} size="sm">추가</Button>
-                <Button
-                  variant="outline"
-                  onClick={() => setShowAddSlot(false)}
-                  size="sm"
-                >
-                  취소
-                </Button>
-              </div>
-            </div>
-          )}
         </CardContent>
       </Card>
     </div>

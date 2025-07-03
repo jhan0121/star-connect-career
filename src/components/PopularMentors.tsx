@@ -2,8 +2,6 @@
 import React from 'react';
 import { Star, Users, Shield, TrendingUp } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 
 interface PopularMentorsProps {
   onMentorClick: (mentor: any) => void;
@@ -14,31 +12,73 @@ export const PopularMentors = ({ onMentorClick }: PopularMentorsProps) => {
     {
       id: 1,
       name: '최시니어',
+      age: 43,
       title: '대기업 인사팀 과장',
+      experience: '15년차',
+      expertise: ['인사관리', '리더십', '조직문화', '커리어 전환'],
+      company: '대기업',
+      description: '후배들의 성장을 도와주는 것을 즐기는 베테랑 인사 전문가입니다.',
       rating: 4.9,
+      mentorRating: 4.9,
+      menteeRating: 4.7,
       reviewCount: 24,
       consultationCount: 47,
-      expertise: ['인사관리', '리더십'],
+      joinDate: '2024-01-15',
+      availableSlots: [
+        { date: '2025-07-05', time: '19:00', type: '온라인' },
+        { date: '2025-07-08', time: '20:00', type: '온라인' },
+        { date: '2025-07-12', time: '14:00', type: '오프라인', location: '강남역 카페' }
+      ],
+      consultationType: ['커리어 상담', '면접 준비', '조직 적응'],
+      profileImage: '/placeholder.svg',
       trend: 'hot'
     },
     {
       id: 3,
       name: '김마케터',
+      age: 35,
       title: '마케팅 팀장',
+      experience: '8년차',
+      expertise: ['디지털 마케팅', '브랜딩', '포트폴리오 리뷰', '실무 경험'],
+      company: '중견기업',
+      description: '실무 중심의 마케팅 인사이트를 전해드리는 마케팅 전문가입니다.',
       rating: 4.8,
+      mentorRating: 4.8,
+      menteeRating: 4.6,
       reviewCount: 32,
       consultationCount: 38,
-      expertise: ['디지털 마케팅', '브랜딩'],
+      joinDate: '2024-03-10',
+      availableSlots: [
+        { date: '2025-07-07', time: '18:00', type: '온라인' },
+        { date: '2025-07-10', time: '19:00', type: '오프라인', location: '홍대입구역 카페' },
+        { date: '2025-07-13', time: '15:00', type: '온라인' }
+      ],
+      consultationType: ['포트폴리오 피드백', '실무 상담', '취업 준비'],
+      profileImage: '/placeholder.svg',
       trend: 'rising'
     },
     {
       id: 2,
       name: '박주니어',
+      age: 31,
       title: 'IT 스타트업 개발자',
+      experience: '3년차',
+      expertise: ['백엔드 개발', 'AI/ML', '기술 스택 선택', '스타트업 경험'],
+      company: 'IT 스타트업',
+      description: '최신 기술 트렌드와 스타트업 경험을 공유하는 개발자입니다.',
       rating: 4.7,
+      mentorRating: 4.7,
+      menteeRating: 4.8,
       reviewCount: 18,
       consultationCount: 25,
-      expertise: ['백엔드 개발', 'AI/ML'],
+      joinDate: '2024-06-20',
+      availableSlots: [
+        { date: '2025-07-06', time: '19:30', type: '온라인' },
+        { date: '2025-07-09', time: '21:00', type: '온라인' },
+        { date: '2025-07-11', time: '18:00', type: '온라인' }
+      ],
+      consultationType: ['기술 상담', '커리어 로드맵', '이직 준비'],
+      profileImage: '/placeholder.svg',
       trend: 'new'
     }
   ];
