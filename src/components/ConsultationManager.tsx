@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { ArrowLeft, Calendar, Check, X, Clock, MapPin, User, MessageSquare, Star, MessageCircle } from 'lucide-react';
 import { MenteeRatingModal } from './MenteeRatingModal';
@@ -19,7 +20,7 @@ interface Consultation {
   date: string;
   time: string;
   type: string;
-  location?: string; // Make location optional
+  location?: string;
   message: string;
   status: string;
   role: string;
@@ -28,6 +29,7 @@ interface Consultation {
   menteeRating?: number;
   mentorReview?: string;
   menteeReview?: string;
+  rejectReason?: string;
 }
 
 interface ConsultationManagerProps {
@@ -94,6 +96,33 @@ export const ConsultationManager = ({ onBack, onStartChat, role }: ConsultationM
         role: 'mentor'
       }
     ],
+    rejected: [
+      // As mentee - rejected requests
+      {
+        id: 7,
+        mentorName: '최시니어',
+        menteeName: '나',
+        date: '2025-07-08',
+        time: '19:00',
+        type: '온라인',
+        message: '인사 분야로 이직을 고려하고 있어 조언을 구합니다.',
+        status: 'rejected',
+        role: 'mentee',
+        rejectReason: '현재 해외 출장 중이라 상담이 어려운 상황입니다. 8월 이후에 다시 신청해주시면 감사하겠습니다.'
+      },
+      {
+        id: 8,
+        mentorName: '김마케터',
+        menteeName: '나',
+        date: '2025-07-05',
+        time: '20:00',
+        type: '온라인',
+        message: 'B2B 마케팅에 대해 궁금한 점이 있습니다.',
+        status: 'rejected',
+        role: 'mentee',
+        rejectReason: '문의해주신 B2B 마케팅 분야는 제 전문 영역이 아니라 적절한 조언을 드리기 어려울 것 같습니다. B2B 전문 멘토님께 상담받으시길 추천드립니다.'
+      }
+    ],
     completed: [
       // As mentee
       {
@@ -128,10 +157,12 @@ export const ConsultationManager = ({ onBack, onStartChat, role }: ConsultationM
   const [consultations, setConsultations] = useState<{
     pending: Consultation[];
     approved: Consultation[];
+    rejected: Consultation[];
     completed: Consultation[];
   }>({
     pending: allConsultations.pending.filter(c => c.role === role),
     approved: allConsultations.approved.filter(c => c.role === role),
+    rejected: allConsultations.rejected.filter(c => c.role === role),
     completed: allConsultations.completed.filter(c => c.role === role)
   });
 
@@ -179,9 +210,17 @@ export const ConsultationManager = ({ onBack, onStartChat, role }: ConsultationM
       return;
     }
 
+    // Move to rejected list instead of removing
+    const rejectedConsultation = {
+      ...selectedConsultation,
+      status: 'rejected',
+      rejectReason: rejectReason
+    };
+
     setConsultations({
       ...consultations,
-      pending: consultations.pending.filter(c => c.id !== selectedConsultation.id)
+      pending: consultations.pending.filter(c => c.id !== selectedConsultation.id),
+      rejected: [...consultations.rejected, rejectedConsultation]
     });
     
     // Send notification with rejection reason
@@ -271,10 +310,12 @@ export const ConsultationManager = ({ onBack, onStartChat, role }: ConsultationM
           </div>
           <Badge variant={
             consultation.status === 'pending' ? 'default' :
-            consultation.status === 'approved' ? 'secondary' : 'outline'
+            consultation.status === 'approved' ? 'secondary' : 
+            consultation.status === 'rejected' ? 'destructive' : 'outline'
           }>
             {consultation.status === 'pending' ? '대기중' :
-             consultation.status === 'approved' ? '승인됨' : '완료'}
+             consultation.status === 'approved' ? '승인됨' : 
+             consultation.status === 'rejected' ? '거절됨' : '완료'}
           </Badge>
         </div>
 
@@ -282,6 +323,13 @@ export const ConsultationManager = ({ onBack, onStartChat, role }: ConsultationM
           <h5 className="text-sm font-medium text-gray-700 mb-1">상담 내용</h5>
           <p className="text-sm text-gray-600 bg-gray-50 p-3 rounded">{consultation.message}</p>
         </div>
+
+        {consultation.status === 'rejected' && consultation.rejectReason && (
+          <div className="mb-4">
+            <h5 className="text-sm font-medium text-red-700 mb-1">거절 사유</h5>
+            <p className="text-sm text-red-600 bg-red-50 p-3 rounded border border-red-200">{consultation.rejectReason}</p>
+          </div>
+        )}
 
         <div className="flex flex-wrap gap-2">
           {showActions && role === 'mentor' && consultation.status === 'pending' && (
@@ -415,7 +463,7 @@ export const ConsultationManager = ({ onBack, onStartChat, role }: ConsultationM
             />
           ) : (
             <Tabs defaultValue="pending" className="w-full">
-              <TabsList className="grid w-full grid-cols-3">
+              <TabsList className="grid w-full grid-cols-4">
                 <TabsTrigger value="pending" className="flex items-center space-x-1">
                   <span>신청 대기</span>
                   {consultations.pending.length > 0 && (
@@ -429,6 +477,14 @@ export const ConsultationManager = ({ onBack, onStartChat, role }: ConsultationM
                   {consultations.approved.length > 0 && (
                     <Badge variant="secondary" className="ml-1 text-xs px-1.5 py-0.5">
                       {consultations.approved.length}
+                    </Badge>
+                  )}
+                </TabsTrigger>
+                <TabsTrigger value="rejected" className="flex items-center space-x-1">
+                  <span>거절된 상담</span>
+                  {consultations.rejected.length > 0 && (
+                    <Badge variant="outline" className="ml-1 text-xs px-1.5 py-0.5">
+                      {consultations.rejected.length}
                     </Badge>
                   )}
                 </TabsTrigger>
@@ -463,6 +519,24 @@ export const ConsultationManager = ({ onBack, onStartChat, role }: ConsultationM
                 ) : (
                   <div>
                     {consultations.approved.map(consultation => (
+                      <ConsultationCard 
+                        key={consultation.id}
+                        consultation={consultation}
+                      />
+                    ))}
+                  </div>
+                )}
+              </TabsContent>
+
+              <TabsContent value="rejected" className="mt-6">
+                {consultations.rejected.length === 0 ? (
+                  <div className="text-center py-8 text-gray-500">
+                    <X className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                    <p>거절된 상담이 없습니다.</p>
+                  </div>
+                ) : (
+                  <div>
+                    {consultations.rejected.map(consultation => (
                       <ConsultationCard 
                         key={consultation.id}
                         consultation={consultation}

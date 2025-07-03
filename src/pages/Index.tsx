@@ -10,8 +10,9 @@ import { NotificationCenter } from '@/components/NotificationCenter';
 import { PopularMentors } from '@/components/PopularMentors';
 import { MentorSortFilter } from '@/components/MentorSortFilter';
 import { MenteeReviewModal } from '@/components/MenteeReviewModal';
+import { CommunityFeed } from '@/components/CommunityFeed';
 import { NotificationProvider } from '@/contexts/NotificationContext';
-import { Star, Users, Calendar, MessageCircle, Bell } from 'lucide-react';
+import { Star, Users, Calendar, MessageCircle, Bell, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const IndexContent = () => {
@@ -180,6 +181,13 @@ const IndexContent = () => {
         );
       case 'profile':
         return <ProfileManager onBack={() => setCurrentView('home')} />;
+      case 'community':
+        return (
+          <CommunityFeed
+            onBack={() => setCurrentView('home')}
+            onStartChat={handleStartChat}
+          />
+        );
       case 'consultations':
         return (
           <ConsultationSelector
@@ -267,6 +275,15 @@ const IndexContent = () => {
               >
                 <Calendar className="h-4 w-4" />
                 <span>내 상담</span>
+              </Button>
+
+              <Button 
+                variant={currentView === 'community' ? 'default' : 'ghost'}
+                onClick={() => setCurrentView('community')}
+                className="flex items-center space-x-1"
+              >
+                <Globe className="h-4 w-4" />
+                <span>커뮤니티</span>
               </Button>
               
               <Button 

@@ -30,6 +30,7 @@ export const ProfileManager = ({ onBack }) => {
     consultationType: ['포트폴리오 리뷰', '디자인 피드백', '커리어 상담']
   });
 
+  const [mentorRating] = useState(4.8); // Mock mentor rating
   const [menteeRating] = useState(4.7); // Mock mentee rating
 
   const handleProfileSave = () => {
@@ -80,7 +81,11 @@ export const ProfileManager = ({ onBack }) => {
             </div>
             <div className="flex items-center space-x-1 bg-blue-50 px-2 py-1 rounded-full">
               <Star className="h-3 w-3 text-blue-600 fill-current" />
-              <span className="text-xs font-medium text-blue-700">멘티 평판 {menteeRating}점</span>
+              <span className="text-xs font-medium text-blue-700">멘토 평판 {mentorRating}점</span>
+            </div>
+            <div className="flex items-center space-x-1 bg-purple-50 px-2 py-1 rounded-full">
+              <Star className="h-3 w-3 text-purple-600 fill-current" />
+              <span className="text-xs font-medium text-purple-700">멘티 평판 {menteeRating}점</span>
             </div>
           </CardTitle>
           <Button
